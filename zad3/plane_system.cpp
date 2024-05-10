@@ -1,16 +1,13 @@
 #include "plane_system.h"
 
-void create_plane(map<int, vector<string>>& kal) { // создание самолета
-    cout << "Введите номер самолета: ";
-    int numplane, numtown;
+void create_plane(map<string, vector<string>>& kal) { // создание самолета
+    cout << "Введите название самолета: ";
+    int numtown;
+    string plane;
     while (true) {
-        cin >> numplane;
-        if(cin.fail()) {
-            cout << "Ошибка. Нельзя использовать буквы." << endl;
-            cin.clear();
-            cin.get();
-        } else if (kal.find(numplane) != kal.end()) {
-            cout << "Номер самолета " << numplane << " уже занят, выберите другой.";
+        cin >> plane;
+        if (kal.find(plane) != kal.end()) {
+            cout << "Номер самолета " << plane << " уже занят, выберите другой.";
         } else break;
     }
     cout << "Введите число городов: ";
@@ -28,9 +25,9 @@ void create_plane(map<int, vector<string>>& kal) { // создание само�
     for (string& x : numplanetown) {
         cin >> x;
     }
-    kal[numplane] = numplanetown;
+    kal[plane] = numplanetown;
 }
-void planes_for_town(const map<int, vector<string>>& kal, const string& town) { // вывод самолетов, пролетающих город
+void planes_for_town(const map<string, vector<string>>& kal, const string& town) { // вывод самолетов, пролетающих город
     cout << "Самолеты летающие через " << town << ":" << endl;
     bool found = false;
     for (auto pair : kal) {
@@ -47,22 +44,38 @@ void planes_for_town(const map<int, vector<string>>& kal, const string& town) { 
         cout << "Нет пролетающих самолетов " << town << endl;
     }
 }
-void towns_for_plane(const map<int, vector<string>>& kal, int plane) { // вывод городов, которые пролетает самолет
+void towns_for_plane(const map<string, vector<string>>& kal, string plane) { // вывод городов, которые пролетает самолет
     if (kal.find(plane) != kal.end()) {
         const vector<string>& towns = kal.at(plane);
         cout << "Города, через которые мы пролетели на самолете " << plane << ":" << endl;
         for (string town : towns) {
             cout << town << endl;
-            planes_for_town(kal, town);
+            cout << "Самолеты летающие через " << town << ":" << endl; //
+            bool found = false;
+            for (auto pair : kal) {
+                const vector<string>& towns = pair.second;
+                for (string t : towns) {
+                    if (t == town) {
+                        if (pair.first != plane) {
+                            cout << "Самолет " << pair.first << endl;
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (!found) {
+                cout << "Нет пролетающих самолетов " << town << endl;
+            }
         }
     } else {
         cout << "Самолеты " << plane << " не был найден." << endl;
     }
 }
-void planes(const map<int, vector<string>>& kal) { // вывод информации по самолетам
+void planes(const map<string, vector<string>>& kal) { // вывод информации по самолетам
     for (auto pair : kal) {
-        int planeNumber = pair.first;
-        cout << "Самолет " << planeNumber << " останавливается в этих городах:" << endl;
+        string plane = pair.first;
+        cout << "Самолет " << plane << " останавливается в этих городах:" << endl;
         const vector<string>& towns = pair.second;
         for (string town : towns) {
             cout << town << endl;

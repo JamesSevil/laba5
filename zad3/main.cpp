@@ -7,8 +7,8 @@ int main() {
     cout << "Все команды: CREATE_PLANE, PLANES_FOR_TOWN, TOWNS_FOR_PLANE, PLANES, EXIT" << endl;
     string comands;
     string town;
-    int plane;
-    map<int, vector<string>> kal;
+    string plane;
+    map<string, vector<string>> kal;
 
     while (true) {
         cout << "Введите команду: ";
