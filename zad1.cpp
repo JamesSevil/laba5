@@ -11,6 +11,7 @@ struct item { // продукт
     string name;
     int quantity;
 };
+
 class sklad { // склад
 private:
     map<string, item> storage; // хранилище
@@ -18,33 +19,41 @@ private:
     
 public:
     void add(string address, string name, int quantity) { // ф-и€ добавлени€ товара
-        if (storage.count(address) != 0) {
-            if (storage[address].quantity + quantity <= 10) {
-                storage[address] = {name, storage[address].quantity + quantity};
+        if (storage.count(address) != 0) { // проверка есть ли така€ €чейка
+            if (storage[address].name != name && storage[address].name != "") { // проверка, зан€ты ли €чейка другим продуктом
+                cout << "ќшибка, €чейка зан€та!" << endl;
             } else {
-                cout << "ќшибка, не хватает места дл€ продуктов" << endl;
+                if (storage[address].quantity + quantity <= 10) { // проверка, превышает ли кол-во продуктов при добавлении число 10
+                    storage[address] = {name, storage[address].quantity + quantity};
+                } else {
+                    cout << "ќшибка, не хватает места в €чейке!" << endl;
+                }
             }
-        } else {
-            cout << "“акого адреса не существует" << endl;
+        } else { // если нет €чейки, то ошибка
+            cout << "ќшибка, нет такой €чейки!" << endl;
         }
     }
+
     void remove(string address, int quantity) { // ф-и€ удалени€ товара
-        if (storage.count(address) != 0) {
-            if (storage[address].quantity - quantity >= 0) {
-                storage[address].quantity -= quantity; 
-            } else {
-                cout << "Ќет стольки продуктов дл€ удалени€" << endl;
+        if (storage.count(address) != 0) { // проверка есть ли така€ €чейка
+            if (storage[address].quantity - quantity == 0) { // проверка, если при удалении продуктов стало 0, то освободим €чейку от продукта
+                storage[address] = {"", 0};
+            } else if (storage[address].quantity - quantity > 0) { // проверка, если при удалении продуктов их будет > 0, то выполн€ем
+                storage[address].quantity -= quantity;
+            } else { // если < 0, то продуктов не хватает
+                cout << "ќшибка, не хватает продуктов дл€ удалени€!" << endl;
             }
         } else {
-            cout << "“акого адреса не существует" << endl;
+            cout << "ќшибка, нет такой €чейки!" << endl;
         }
     }
+
     void info () { // ф-и€ вызова информации
         cout << "јдресс\t" << "ѕродукт\t" << " ол-во" << endl; // информаци€ по загруженным €чейкам
         float countzanyato = 0.0;
         float countzonezanyato;
         for (auto i : storage) {
-            if (i.second.quantity != 0) {
+            if (i.second.quantity != 0) { // вывод непустых €чеек
                 cout << i.first << "\t" << i.second.name << "\t" << i.second.quantity << endl;
                 countzanyato++;
             }
@@ -52,10 +61,10 @@ public:
 
         float countvsego = 0.0; // информаци€ по общей загруженности склада
         cout << "«агруженность склада: ";
-        for (auto i : storage) {
+        for (auto i : storage) { // считаем всего €чеек
             countvsego++;
         }
-        float zagrsklad = (countzanyato/countvsego)*100;
+        float zagrsklad = (countzanyato/countvsego)*100; // высчитываем загруженность склада
         cout << zagrsklad << "%" << endl;
 
         float countvsegozones = countvsego / zonees.size(); // »нформаци€ по общей загруженности каждой зоны
@@ -63,7 +72,7 @@ public:
         cout << "«агруженность каждой зоны:" << endl;
         for (int i = 0; i < zonees.size(); ++i) {
             for (auto j : storage) {
-                if(j.first[0] == zonees[i] && j.second.quantity > 0) {
+                if(j.first[0] == zonees[i] && j.second.quantity > 0) { // считаем зан€тые зоны
                     countzanyatozones[i]++;
                 }
             }
@@ -83,6 +92,7 @@ public:
         }
         cout << endl;
     }
+
     void GenerationAddress() { // формируем адресса склада
         vector<char> zones = {'A', 'B', 'C'};
         zonees = zones;
