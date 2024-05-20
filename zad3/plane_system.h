@@ -16,5 +16,6 @@ enum class Type {
     PLANES_FOR_TOWN,
     TOWNS_FOR_PLANE,
     PLANES,
-    EXIT
+    EXIT,
+    OTHERS
 };
