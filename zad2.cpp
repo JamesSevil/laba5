@@ -4,23 +4,42 @@
 
 using namespace std;
 
-void QueuePeoples(vector<pair<int, int>>& visitors, int numWindows) { // ф-ия формирования очереди
-    vector<int> WindowsTimes(numWindows, 0);
-    vector<int> WindowsNumbers(numWindows);
-
-    for(int i= 0; i < numWindows; ++i) { // работа с номерами окон
-        WindowsNumbers[i] = i + 1;
+void queuePeoples(vector<pair<int, int>>& visitors, int numWindows) {
+    vector<int> windowTimes(numWindows, 0);
+    vector<int> windowNumbers(numWindows);
+    vector<vector<int>> WINDOWS(numWindows);
+    // Работа с номерами окон
+    for (int i = 0; i < numWindows; ++i) {
+        windowNumbers[i] = i + 1;
     }
 
-    for (const auto& people : visitors) {
-        
-        auto MinWindowIndex = min_element(WindowsTimes.begin(), WindowsTimes.end()) - WindowsTimes.begin(); // находим индекс окна с минимальным временем работы
+    int numNextPeople = 0; // Номер следующего посетителя
 
-        cout << ">>> " << "Окно " << WindowsNumbers[MinWindowIndex] << " (" << WindowsTimes[MinWindowIndex] << " минут): "; // вывод информации по очереди
-        cout << "T" << people.second;
-        WindowsTimes[MinWindowIndex] += people.first; // Увеличиваем время работы окна на время обслуживания посетителя
+    while (!visitors.empty()) {
+        // Находим посетителя с самым большим временем посещения
+        auto maxPeopleIndex = max_element(visitors.begin(), visitors.end()) - visitors.begin();
+
+        // Находим индекс окна с минимальным временем работы
+        auto minWindowIndex = min_element(windowTimes.begin(), windowTimes.end()) - windowTimes.begin();
+
+        WINDOWS[minWindowIndex].push_back(visitors[maxPeopleIndex].second);
+
+        
+        windowTimes[minWindowIndex] += visitors[maxPeopleIndex].first; // Увеличиваем время работы окна на время обслуживания посетителя
+
+        visitors.erase(visitors.begin() + maxPeopleIndex); // Удаляем посетителя из очереди
+
+        numNextPeople++;
+    }
+
+    for (int i = 0; i < WINDOWS.size(); ++i) {
+        cout << "Окно " << i+1 << "(" << windowTimes[i] << " минут): ";
+        for (auto elem : WINDOWS[i]) {
+            cout << "T" << elem << " ";
+        }
         cout << endl;
     }
+
 }
 
 int main(){
@@ -46,7 +65,7 @@ int main(){
             cout << ">>> T" << talon << endl;
             Peoples.push_back({time, talon});
         } else if (command == "DISTRIBUTE") {
-            QueuePeoples(Peoples, NumsWindows); // ф-ия формирования очереди
+            queuePeoples(Peoples, NumsWindows); // ф-ия формирования очереди
         } else if (command == "EXIT") {
             cout << ">>> Выход..." << endl;
             k = false;
