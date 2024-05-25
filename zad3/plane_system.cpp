@@ -13,17 +13,40 @@ void create_plane(map<string, vector<string>>& kal) { // создание сам
     cout << "Введите число городов: ";
     while (true) {
         cin >> numtown;
-        if (cin.fail()) {
+        if (numtown < 2) {
+            cout << "Ошибка! Минимум 2 города для ввода." << endl;
+            cin.clear();
+            cin.get();
+        } else if (cin.fail()) {
             cout << "Ошибка. Нельзя использовать буквы." << endl;
             cin.clear();
             cin.get();
         } else break;
     }
-    string towns;
-    vector<string> numplanetown(numtown);
-    cout << "Название города: ";
-    for (string& x : numplanetown) {
-        cin >> x;
+    // ввод городов
+    string town;
+    vector<string> numplanetown;
+    bool check = false;
+    int iter = 0;
+    while (true) {
+        if (iter == numtown) {
+            break;
+        }
+        cout << "Введите город: ";
+        cin >> town;
+        check = false;
+        for (auto elem : numplanetown) {
+            if (elem == town) {
+                check = true;
+                break;
+            }
+        }
+        if (check) {
+            cout << "Ошибка, город повторяется!" << endl;
+        } else {
+            numplanetown.push_back(town);
+            iter++;
+        }
     }
     kal[plane] = numplanetown;
 }
