@@ -1,5 +1,5 @@
 class Item:
-    def __init__(self, name='', quantity=0):
+    def __init__(self, name, quantity):
         self.name = name
         self.quantity = quantity
 
@@ -10,21 +10,26 @@ class Sklad:
 
     def add(self, address, name, quantity):
         if address in self.storage:
-            if self.storage[address].quantity + quantity <= 10:
-                self.storage[address] = Item(name, self.storage[address].quantity + quantity)
+            if self.storage[address].name != name and self.storage[address].name != "":
+                print("Ошибка, ячейка занята!")
             else:
-                print("Ошибка, не хватает места для продуктов")
+                if self.storage[address].quantity + quantity <= 10:
+                    self.storage[address] = Item(name, self.storage[address].quantity + quantity)
+                else:
+                    print("Ошибка, не хватает места в ячейке!")
         else:
-            print("Такого адреса не существует")
+            print("Ошибка, нет такой ячейки!")
 
     def remove(self, address, quantity):
         if address in self.storage:
-            if self.storage[address].quantity - quantity >= 0:
+            if self.storage[address].quantity - quantity == 0:
+                self.storage[address] = Item("", 0)
+            elif self.storage[address].quantity - quantity > 0:
                 self.storage[address].quantity -= quantity
             else:
-                print("Нет стольки продуктов для удаления")
+                print("Ошибка, не хватает продуктов для удаления!")
         else:
-            print("Такого адреса не существует")
+            print("Ошибка, нет такой ячейки!")
 
     def info(self):
         print("Адресс\tПродукт\tКол-во")
@@ -35,24 +40,27 @@ class Sklad:
                 count_occupied += 1
 
         total_count = len(self.storage)
-        print("Загруженность склада: {:.2f}%".format((count_occupied / total_count) * 100))
+        print("Загруженность склада: ", end="")
+        print(f"{(count_occupied / total_count) * 100}%")
 
-        total_zones = total_count / len(self.zones)
-        occupied_zones = [0.0] * len(self.zones)
         print("Загруженность каждой зоны:")
+        total_zones = total_count / len(self.zones)
+        count_occupied_zones = [0.0] * len(self.zones)
         for i, zone in enumerate(self.zones):
             for address, item in self.storage.items():
                 if address[0] == zone and item.quantity > 0:
-                    occupied_zones[i] += 1
-            print("Зона {}: {:.2f}%".format(zone, (occupied_zones[i] / total_zones) * 100))
+                    count_occupied_zones[i] += 1
 
-        print("Пустые ячейки: ", end='')
+            print(f"Зона {zone}: ", end="")
+            print(f"{(count_occupied_zones[i] / total_zones) * 100}%")
+
+        print("Пустые ячейки: ", end="")
         for address, item in self.storage.items():
             if item.quantity == 0:
-                print(address, end=' ')
+                print(address, end=" ")
         print()
 
-    def generate_addresses(self):
+    def generate_address(self):
         zones = ['A', 'B', 'C']
         self.zones = zones
         for zone in zones:
@@ -60,12 +68,13 @@ class Sklad:
                 for section in range(1, 6):
                     for rack in range(1, 4):
                         address = f"{zone}{rack}{section}{shelf}"
-                        self.storage[address] = Item()
+                        self.storage[address] = Item("", 0)
+
 
 warehouse = Sklad()
-warehouse.generate_addresses()
+warehouse.generate_address()
 
-print("Выберите команду: ADD, REMOVE, INFO, EXIT для выхода:")
+print("Выберите команду: ADD, REMOVE, INFO, EXIT для выхода: ")
 k = True
 while k:
     command = input()
